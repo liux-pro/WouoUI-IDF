@@ -32,6 +32,9 @@ public:
     void print(const char str[]) {
         drawUTF8(tx, ty, str);
     }
+    void print(uint8_t num) {
+        printf(tx,ty,"%d",num);
+    }
 };
 
 #endif
