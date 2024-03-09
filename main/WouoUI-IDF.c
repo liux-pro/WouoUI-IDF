@@ -18,22 +18,37 @@
 static const char *TAG = "ssd1306";
 
 _Noreturn void task_test_SSD1306i2c(void *ignore) {
-#define PIN_SDA GPIO_NUM_3
-#define PIN_SCL GPIO_NUM_2
-#define PIN_RST GPIO_NUM_10
+
+#define PIN_CLK GPIO_NUM_2
+
+// MOSI - GPIO 13
+#define PIN_MOSI GPIO_NUM_3
+
+// RESET - GPIO 26
+#define PIN_RESET GPIO_NUM_10
+
+// DC - GPIO 27
+#define PIN_DC GPIO_NUM_6
+
+// CS - GPIO 15
+#define PIN_CS GPIO_NUM_7
     u8g2_esp32_hal_t u8g2_esp32_hal = U8G2_ESP32_HAL_DEFAULT;
-    u8g2_esp32_hal.bus.i2c.sda = PIN_SDA;
-    u8g2_esp32_hal.bus.i2c.scl = PIN_SCL;
-    u8g2_esp32_hal.reset = PIN_RST;
+    u8g2_esp32_hal.bus.spi.clk = PIN_CLK;
+    u8g2_esp32_hal.bus.spi.mosi = PIN_MOSI;
+    u8g2_esp32_hal.bus.spi.cs = PIN_CS;
+    u8g2_esp32_hal.dc = PIN_DC;
+    u8g2_esp32_hal.reset = PIN_RESET;
     u8g2_esp32_hal_init(u8g2_esp32_hal);
     setup();
     while (1) {
         loop();
-//        vTaskDelay(pdMS_TO_TICKS(10));
+        vTaskDelay(pdMS_TO_TICKS(3));
     }
 }
 void virtualShortPress();
 void virtualLongPress();
+void virtualCCW();
+void virtualCW();
 static void button_long_press_cb(void *arg, void *data)
 {
     virtualLongPress();
@@ -46,11 +61,12 @@ static void button_short_press_cb(void *arg, void *data)
 }
 static void button_left_cb(void *arg, void *data)
 {
-
+    virtualCCW();
     ESP_LOGI(TAG, "button_left_cb");
 }
 static void button_right_cb(void *arg, void *data)
 {
+    virtualCW();
     ESP_LOGI(TAG, "button_right_cb");
 }
 

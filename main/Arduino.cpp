@@ -38,7 +38,7 @@
 
 
 
-U8G2_SSD1306_128X64_ESP_I2C u8g2;
+U8G2_SSD1306_128X64_ESP_SPI u8g2;
 
 void device_init();
 /************************************* 定义页面 *************************************/
@@ -367,18 +367,24 @@ struct {
 } volatile btn;
 
 
-extern "C"  void virtualShortPress() {
+extern "C" {
+void virtualShortPress() {
     btn.pressed = true;
-    btn.count = 0;
     btn.id = BTN_ID_SP;
-
 }
-extern "C"  void virtualLongPress() {
+void virtualLongPress() {
     btn.pressed = true;
-    btn.count = 0;
     btn.id = BTN_ID_LP;
 }
-
+void virtualCCW() {
+    btn.pressed = true;
+    btn.id = BTN_ID_CC;
+}
+void virtualCW() {
+    btn.pressed = true;
+    btn.id = BTN_ID_CW;
+}
+}
 
 
 void knob_inter() {
@@ -1098,9 +1104,8 @@ void setup() {
 }
 
 uint16_t a;
+
 void loop() {
     btn_scan();
     ui_proc();
-    a++;
-    printf("%d\n",a);
 }

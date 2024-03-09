@@ -22,9 +22,9 @@ uint8_t u8x8_gpio_and_delay(u8x8_t *u8x8, uint8_t msg, uint8_t arg_int, void *ar
 #include "U8g2lib.h"
 #include <cstdio>
 
-class U8G2_SSD1306_128X64_ESP_I2C : public U8G2{
+class U8G2_SSD1306_128X64_ESP_SPI : public U8G2{
 public:
-    U8G2_SSD1306_128X64_ESP_I2C();
+    U8G2_SSD1306_128X64_ESP_SPI();
 
     void printf(int x, int y, const char *format, ...);
 
