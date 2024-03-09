@@ -10,19 +10,19 @@
 #include "sdkconfig.h"
 #include "u8g2_esp32_hal.h"
 
-// SDA - GPIO21
-#define PIN_SDA 17
+#define PIN_SDA 3
 
-// SCL - GPIO22
-#define PIN_SCL 18
+#define PIN_SCL 2
 
-static const char* TAG = "ssd1306";
+#define PIN_RST 10
 
-void task_test_SSD1306i2c(void* ignore) {
+static const char *TAG = "ssd1306";
+
+void task_test_SSD1306i2c(void *ignore) {
     u8g2_esp32_hal_t u8g2_esp32_hal = U8G2_ESP32_HAL_DEFAULT;
     u8g2_esp32_hal.bus.i2c.sda = PIN_SDA;
     u8g2_esp32_hal.bus.i2c.scl = PIN_SCL;
-    u8g2_esp32_hal.reset=16;
+    u8g2_esp32_hal.reset = PIN_RST;
     u8g2_esp32_hal_init(u8g2_esp32_hal);
 
     u8g2_t u8g2;  // a structure which will contain all the data for one display
@@ -58,7 +58,6 @@ void task_test_SSD1306i2c(void* ignore) {
 }
 
 
-void app_main(void)
-{
+void app_main(void) {
     xTaskCreatePinnedToCore(task_test_SSD1306i2c, "task_test_SSD1306i2c", 4 * 1024, NULL, 5, NULL, 1);
 }
