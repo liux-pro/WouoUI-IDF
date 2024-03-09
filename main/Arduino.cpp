@@ -366,19 +366,19 @@ struct {
     long count;
 } volatile btn;
 
-extern "C" {
-void virtualShortPress() {
+
+extern "C"  void virtualShortPress() {
     btn.pressed = true;
     btn.count = 0;
     btn.id = BTN_ID_SP;
 
 }
-void virtualLongPress() {
+extern "C"  void virtualLongPress() {
     btn.pressed = true;
     btn.count = 0;
     btn.id = BTN_ID_LP;
 }
-}
+
 
 
 void knob_inter() {
@@ -1080,10 +1080,11 @@ void ui_proc() {
 
 //OLED初始化函数
 void oled_init() {
-    u8g2.setBusClock(10000000);
     u8g2.begin();
+    u8g2.setI2CAddress(0x78);
+
     u8g2.enableUTF8Print();
-    u8g2.setContrast(ui.param[DISP_BRI]);
+//    u8g2.setContrast(ui.param[DISP_BRI]);
     ui.buf_ptr = u8g2.getBufferPtr();
     ui.buf_len = 8 * u8g2.getBufferTileHeight() * u8g2.getBufferTileWidth();
 }
@@ -1093,9 +1094,13 @@ void setup() {
     list_init();
     oled_init();
     btn_init();
+    virtualLongPress();
 }
 
+uint16_t a;
 void loop() {
     btn_scan();
     ui_proc();
+    a++;
+    printf("%d\n",a);
 }
