@@ -12,17 +12,21 @@
 #include "sdkconfig.h"
 #include "u8g2_esp32_hal.h"
 
-#define PIN_SDA 3
 
-#define PIN_SCL 2
-
-#define PIN_RST 10
 
 static const char *TAG = "ssd1306";
 
 _Noreturn void task_test_SSD1306i2c(void *ignore) {
+#define PIN_SDA GPIO_NUM_3
+#define PIN_SCL GPIO_NUM_2
+#define PIN_RST GPIO_NUM_10
+    u8g2_esp32_hal_t u8g2_esp32_hal = U8G2_ESP32_HAL_DEFAULT;
+    u8g2_esp32_hal.bus.i2c.sda = PIN_SDA;
+    u8g2_esp32_hal.bus.i2c.scl = PIN_SCL;
+    u8g2_esp32_hal.reset = PIN_RST;
+    u8g2_esp32_hal_init(u8g2_esp32_hal);
     setup();
-    while (1){
+    while (1) {
         loop();
         vTaskDelay(10);
     }
