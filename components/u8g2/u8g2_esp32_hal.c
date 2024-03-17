@@ -72,7 +72,7 @@ uint8_t u8g2_esp32_spi_byte_cb(u8x8_t* u8x8,
 
 
       spi_device_interface_config_t dev_config = {
-                .clock_speed_hz = SPI_MASTER_FREQ_80M,      // Clock out at 10 MHz
+                .clock_speed_hz = SPI_MASTER_FREQ_40M,      // Clock out at 10 MHz
                 .mode = 0,                               // SPI mode 0
                 .spics_io_num = u8g2_esp32_hal.bus.spi.cs,              // CS pin
                 .queue_size = 200, // We want to be able to queue 7 transactions at a time
