@@ -1,5 +1,6 @@
 ## IDF Component Manager Manifest File
 dependencies:
+  espressif/knob: "^0.1.4"
   espressif/button: "^3.2.0"
   ## Required IDF version
   idf:

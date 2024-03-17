@@ -13,25 +13,26 @@
 #include "sdkconfig.h"
 #include "u8g2_esp32_hal.h"
 #include "iot_button.h"
+#include "iot_knob.h"
 
 
 static const char *TAG = "ssd1306";
 
 _Noreturn void task_test_SSD1306i2c(void *ignore) {
 
-#define PIN_CLK GPIO_NUM_2
+#define PIN_CLK GPIO_NUM_5
 
 // MOSI - GPIO 13
-#define PIN_MOSI GPIO_NUM_3
+#define PIN_MOSI GPIO_NUM_2
 
 // RESET - GPIO 26
-#define PIN_RESET GPIO_NUM_10
+#define PIN_RESET GPIO_NUM_7
 
 // DC - GPIO 27
-#define PIN_DC GPIO_NUM_6
+#define PIN_DC GPIO_NUM_1
 
 // CS - GPIO 15
-#define PIN_CS GPIO_NUM_7
+#define PIN_CS GPIO_NUM_0
     u8g2_esp32_hal_t u8g2_esp32_hal = U8G2_ESP32_HAL_DEFAULT;
     u8g2_esp32_hal.bus.spi.clk = PIN_CLK;
     u8g2_esp32_hal.bus.spi.mosi = PIN_MOSI;
@@ -45,69 +46,52 @@ _Noreturn void task_test_SSD1306i2c(void *ignore) {
         vTaskDelay(pdMS_TO_TICKS(3));
     }
 }
+
 void virtualShortPress();
+
 void virtualLongPress();
+
 void virtualCCW();
+
 void virtualCW();
-static void button_long_press_cb(void *arg, void *data)
-{
+
+static void button_long_press_cb(void *arg, void *data) {
     virtualLongPress();
     ESP_LOGI(TAG, "button_long_press_cb");
 }
-static void button_short_press_cb(void *arg, void *data)
-{
+
+static void button_short_press_cb(void *arg, void *data) {
     virtualShortPress();
     ESP_LOGI(TAG, "button_short_press_cb");
 }
-static void button_left_cb(void *arg, void *data)
-{
+
+static void knob_left_cb(void *arg, void *data) {
     virtualCCW();
-    ESP_LOGI(TAG, "button_left_cb");
+    ESP_LOGI(TAG, "KONB: KONB_LEFT");
 }
-static void button_right_cb(void *arg, void *data)
-{
+
+static void knob_right_cb(void *arg, void *data) {
     virtualCW();
-    ESP_LOGI(TAG, "button_right_cb");
+    ESP_LOGI(TAG, "KONB: KONB_right");
 }
 
-
-static button_handle_t g_btns[4] = {0};
+knob_handle_t s_knob;
+knob_config_t cfg;
 
 void app_main(void) {
-    button_config_t cfg = {
-            .type = BUTTON_TYPE_MATRIX,
-            .long_press_time = CONFIG_BUTTON_LONG_PRESS_TIME_MS,
-            .short_press_time = CONFIG_BUTTON_SHORT_PRESS_TIME_MS,
-            .matrix_button_config = {
-                    .row_gpio_num = 0,
-                    .col_gpio_num = 0,
-            }
-    };
+// create knob
 
-    cfg.matrix_button_config.row_gpio_num = 5;
-    cfg.matrix_button_config.col_gpio_num = 8;
-    g_btns[0] = iot_button_create(&cfg);
-    TEST_ASSERT_NOT_NULL(g_btns[0]);
-    iot_button_register_cb(g_btns[0], BUTTON_PRESS_DOWN, button_long_press_cb, NULL);
+    cfg.default_direction = 0,
+    cfg.gpio_encoder_a = 10,
+    cfg.gpio_encoder_b = 6,
 
-    cfg.matrix_button_config.row_gpio_num = 5;
-    cfg.matrix_button_config.col_gpio_num = 9;
-    g_btns[1] = iot_button_create(&cfg);
-    TEST_ASSERT_NOT_NULL(g_btns[1]);
-    iot_button_register_cb(g_btns[1], BUTTON_PRESS_DOWN, button_short_press_cb, NULL);
+    s_knob = iot_knob_create(&cfg);
+    if (NULL == s_knob) {
+        ESP_LOGE(TAG, "knob create failed");
+    }
 
-    cfg.matrix_button_config.row_gpio_num = 4;
-    cfg.matrix_button_config.col_gpio_num = 8;
-    g_btns[2] = iot_button_create(&cfg);
-    TEST_ASSERT_NOT_NULL(g_btns[2]);
-    iot_button_register_cb(g_btns[2], BUTTON_PRESS_DOWN, button_left_cb, NULL);
-
-
-    cfg.matrix_button_config.row_gpio_num = 4;
-    cfg.matrix_button_config.col_gpio_num = 9;
-    g_btns[3] = iot_button_create(&cfg);
-    TEST_ASSERT_NOT_NULL(g_btns[3]);
-    iot_button_register_cb(g_btns[3], BUTTON_PRESS_DOWN, button_right_cb, NULL);
+    iot_knob_register_cb(s_knob, KNOB_LEFT, knob_left_cb, NULL);
+    iot_knob_register_cb(s_knob, KNOB_RIGHT, knob_right_cb, NULL);
 
 
     xTaskCreatePinnedToCore(task_test_SSD1306i2c, "task_test_SSD1306i2c", 4 * 1024, NULL, 5, NULL, 0);
